@@ -1,3 +1,35 @@
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./.github/assets/things_eeg2_dataset-banner-dark.png">
+  <source media="(prefers-color-scheme: light)" srcset="./.github/assets/things_eeg2_dataset-banner-light.png">
+  <img alt="things_eeg2_dataset" src="./.github/assets/things_eeg2_dataset-banner-light.png">
+</picture>
+
+<div align="center">
+
+[![License][license-badge]](LICENSE)
+[![CI Status][ci-badge]][ci]
+<!-- [![Binary Build][binary-build-badge]][binary-build]
+[![Conda Platform][conda-badge]][conda-url]
+[![Conda Downloads][conda-downloads-badge]][conda-url]
+[![Codecov][codecov]][codecov-url] -->
+
+[license-badge]: https://img.shields.io/github/license/zeiss/things_eeg2_dataset?style=flat-square
+
+[ci-badge]: https://img.shields.io/github/actions/workflow/status/zeiss/things_eeg2_dataset/ci.yml?branch=main&style=flat-square&label=CI
+[ci]: https://github.com/zeiss/things_eeg2_dataset/actions/workflows/ci.yml
+
+<!-- [binary-build-badge]: https://img.shields.io/github/actions/workflow/status/zeiss/things_eeg2_dataset/build.yml?branch=main&style=flat-square&label=Binary%20Build
+[binary-build]: https://github.com/zeiss/things_eeg2_dataset/actions/workflows/build.yml -->
+
+<!-- [conda-badge]: https://img.shields.io/conda/vn/conda-forge/things_eeg2_dataset?style=flat-square
+[conda-downloads-badge]: https://img.shields.io/conda/dn/conda-forge/things_eeg2_dataset?style=flat-square
+[conda-url]: https://prefix.dev/channels/conda-forge/packages/things_eeg2_dataset -->
+
+<!-- [codecov]: https://img.shields.io/codecov/c/github/zeiss/things_eeg2_dataset/main?style=flat-square
+[codecov-url]: https://codecov.io/gh/zeiss/things_eeg2_dataset -->
+
+</div>
+
 # THINGS-EEG2 Raw Data Processing
 
 This package provides tools for downloading, preprocessing raw THINGS-EEG2 EEG data, and generating image embeddings from various vision models.

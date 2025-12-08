@@ -9,7 +9,7 @@ on:
 
 jobs:
   pre-commit-checks:
-    name: python
+    name: Pre-Commit Checks and Pytest
     runs-on: ubuntu-latest
 
     steps:
@@ -20,4 +20,7 @@ jobs:
         uses: astral-sh/setup-uv@ed21f2f24f8dd64503750218de024bcf64c7250a # v7.1.5
 
       - name: run pre-commit checks
-        run: uv run pre-commit run --all
+        run: uv run pre-commit run --all --colored=always --show-diff-on-failure
+
+      - name: run pytest
+        run: uv run pytest
