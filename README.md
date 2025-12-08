@@ -48,9 +48,7 @@
       </ul>
     </li>
     <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
     <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
@@ -66,11 +64,23 @@ This package provides tools for downloading, preprocessing raw THINGS-EEG2 EEG d
 > We are in no way associated with the authors, but have conducted research using the data and code they provide.
 > To make working with the dataset even easier, we wrote these utilities and hope that they will make things easier (pun intended) for other people as well.
 
+## Installation
+
+```bash
+# Clone this repository, cd into it and run
+uv sync
+uv pip install --editable .
+```
+
+## Usage
+
+```bash
+python things-eeg2 process \
+    --project_dir /path/to/things_eeg2 \
+    --subjects 1 2 3 4 5 6 7 8 9 10 \
+```
+
 ## Data Structure
-
-The pipeline expects and creates the following directory structure:
-
-## Output structure
 
 After running the downloading (which creates `raw_data/` and `source_data/`), preprocessing (which creates `processed/`, `DATA_VERSION.txt`) and embedding generation, you will get the following directory structure.
 
@@ -148,21 +158,7 @@ embeddings/
 └── ViT-H-14_features_test_full.pt
 ```
 
-## Installation
 
-```bash
-# Clone this repository, cd into it and run
-uv sync
-uv pip install --editable .
-```
-
-## Usage
-
-```bash
-python things-eeg2 process \
-    --project_dir /path/to/things_eeg2 \
-    --subjects 1 2 3 4 5 6 7 8 9 10 \
-```
 
 ## References
 
