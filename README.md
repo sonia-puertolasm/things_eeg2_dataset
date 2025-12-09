@@ -82,56 +82,7 @@ python things-eeg2 process \
 
 ## Data Structure
 
-After running the downloading (which creates `raw_data/` and `source_data/`), preprocessing (which creates `processed/`, `DATA_VERSION.txt`) and embedding generation, you will get the following directory structure.
-
-```bash
-project_dir
-└── DATA_VERSION.txt                              # Contains the commit hash of the package version
-└── Image_set                                     # Raw data downloaded by the downloader
-    └── test_images
-        └── {XXXXX}_{image_condition}
-            └── {image_condition}_{XX}.jpg
-            └── ...
-        └── ...
-    └── training_images
-        └── {XXXXX}_{image_condition}
-            └── {image_condition}_{XX}.jpg
-            └── ...
-        └── ...
-    └── image_metadata.npy
-    └── LICENSE.txt
-        └── ses-{XX}
-            └── raw_eeg_test.npy
-            └── raw_eeg_training.npy
-        └── ...
-└── raw_data                                      # Raw data downloaded by the downloader
-    └── sub-{XX}
-        └── ses-{XX}
-            └── raw_eeg_test.npy
-            └── raw_eeg_training.npy
-        └── ...
-└── source_data/                                  # Default directory (configurable)
-    └── sub-{XX}/
-        ├── preprocessed_eeg_training.npy         # Shape: (sessions, images_conditions, repetitions, channels, timepoints)
-        ├── preprocessed_eeg_test.npy             # Shape: (sessions, images_conditions, repetitions, channels, timepoints)
-        └── img_conditions_test.npy               # Shape: (sessions, images_conditions)
-        └── img_conditions_training.npy           # Shape: (sessions, images_conditions)
-        └── meta.json                             # Keys: ch_names & times
-    └── ...
-└── processed/                                    # Default directory (configurable)
-    └── sub-{XX}/
-        ├── preprocessed_eeg_training.npy         # Shape: (sessions, images_conditions, repetitions, channels, timepoints)
-        ├── preprocessed_eeg_test.npy             # Shape: (sessions, images_conditions, repetitions, channels, timepoints)
-        └── img_conditions_test.npy               # Shape: (sessions, images_conditions)
-        └── img_conditions_training.npy           # Shape: (sessions, images_conditions)
-        └── meta.json                             # Keys: ch_names & times
-    └── ...
-└── embeddings/
-    ├── ViT-H-14_features_train.pt                # Pooled embeddings
-    ├── ViT-H-14_features_train_full.pt           # Full token sequences
-    ├── ViT-H-14_features_test.pt
-    └── ViT-H-14_features_test_full.pt
-```
+For understanding the data structure that is created by the CLI (and then needed to perform proper preprocessing and loading), please see [paths.py](src/things_eeg2_dataset//paths.py). All code is configured to use the structure defined there as its ground truth.
 
 ### Embedding Generation (`embedding_processing/`)
 

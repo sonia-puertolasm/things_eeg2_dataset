@@ -26,12 +26,16 @@ class DataDirectoryLayout:
 
     processed_subdir_template: str = "sub-{subject:02d}"
 
+    # Shape: (sessions, conditions, repetitions, channels, timepoints) -> (4, 8270, 2, 64, 251)
     eeg_train_template: str = "preprocessed_eeg_training_sub-{subject:02d}.npy"
+    # Shape: (sessions, conditions, repetitions, channels, timepoints) -> (4, 200, 20, 64, 251)
     eeg_test_template: str = "preprocessed_eeg_test_sub-{subject:02d}.npy"
 
+    # Shape: (sessions, conditions) -> (4, 8270)
     train_image_conditions_template: str = (
         "img_conditions_training_sub-{subject:02d}.npy"
     )
+    # Shape: (sessions, conditions) -> (4, 200)
     test_image_conditions_template: str = "img_conditions_test_sub-{subject:02d}.npy"
 
     embedding_template: str = "{model}_embeddings.pt"

@@ -3015,6 +3015,20 @@ dev = [
     { name = "ty" },
     { name = "types-tqdm" },
 ]
+lint = [
+    { name = "mypy" },
+    { name = "pandas-stubs" },
+    { name = "pre-commit" },
+    { name = "ruff" },
+    { name = "scipy-stubs", version = "1.15.3.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
+    { name = "scipy-stubs", version = "1.16.3.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
+    { name = "ty" },
+    { name = "types-tqdm" },
+]
+test = [
+    { name = "coverage" },
+    { name = "pytest" },
+]
 
 [package.metadata]
 requires-dist = [
@@ -3042,6 +3056,19 @@ dev = [
     { name = "scipy-stubs", specifier = ">=1.15.3.0" },
     { name = "ty" },
     { name = "types-tqdm", specifier = ">=4.67.0.20250809" },
+]
+lint = [
+    { name = "mypy" },
+    { name = "pandas-stubs", specifier = ">=2.3.2.250926" },
+    { name = "pre-commit" },
+    { name = "ruff" },
+    { name = "scipy-stubs", specifier = ">=1.15.3.0" },
+    { name = "ty" },
+    { name = "types-tqdm", specifier = ">=4.67.0.20250809" },
+]
+test = [
+    { name = "coverage", specifier = ">=7.11.1" },
+    { name = "pytest", specifier = ">=8.4.2" },
 ]
 
 [[package]]
