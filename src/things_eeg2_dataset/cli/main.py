@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 from typing import Annotated
 
@@ -5,6 +6,11 @@ import typer
 from rich import print  # noqa: A004
 
 from things_eeg2_dataset import __version__
+from things_eeg2_dataset.cli.logger import setup_logging
+
+setup_logging()
+
+logger = logging.getLogger(__name__)
 
 app = typer.Typer(
     name="things-eeg2",
@@ -77,7 +83,7 @@ def process(  # noqa: PLR0913
     models: list[str] = typer.Option(
         DEFAULT_MODELS, "--models", help="List of models to use."
     ),
-    processed_dir_name: str = typer.Option("processed"),
+    processed_dir: Path = typer.Option(Path("processed")),
     sfreq: int = typer.Option(250, "--sfreq", help="Downsampling frequency in Hz."),
     device: str = typer.Option(
         "cuda:0", "--device", help="Device for model inference."
@@ -104,7 +110,7 @@ def process(  # noqa: PLR0913
         project_dir=project_dir,
         subjects=subjects,
         models=models,
-        processed_dir_name=processed_dir_name,
+        processed_dir=processed_dir,
         sfreq=sfreq,
         device=device,
         overwrite=force,
@@ -117,8 +123,8 @@ def process(  # noqa: PLR0913
     )
 
     pipeline = ThingsEEGPipeline(config)
-    status = pipeline.run()
-    raise typer.Exit(code=status)
+    pipeline.run()
+    raise typer.Exit(code=0)
 
 
 @app.command(name="load")

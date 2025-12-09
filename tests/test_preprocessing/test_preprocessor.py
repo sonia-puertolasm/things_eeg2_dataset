@@ -20,7 +20,10 @@ def mock_project_dir(tmp_path: Path) -> Path:
 def processor(mock_project_dir: Path) -> RawProcessor:
     """Return a RawProcessor instance for testing."""
     return RawProcessor(
-        subjects=[1], project_dir=str(mock_project_dir), sfreq=250, mvnn_dim="epochs"
+        subjects=[1],
+        project_dir=mock_project_dir,
+        sfreq=250,
+        mvnn_dim="epochs",
     )
 
 

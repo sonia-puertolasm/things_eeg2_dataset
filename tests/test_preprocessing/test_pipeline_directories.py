@@ -7,36 +7,8 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from things_eeg2_dataset.processing.pipeline import (
     PipelineConfig,
-    ProjectPaths,
     ThingsEEGPipeline,
 )
-
-
-def test_project_paths_definitions(tmp_path: Path) -> None:
-    """Test that ProjectPaths defines correct paths."""
-    root = tmp_path / "test_project"
-    processed_name = "custom_processed"
-
-    paths = ProjectPaths(root, processed_name)
-
-    assert paths.root == root
-    assert paths.processed == root / processed_name
-    assert paths.raw_data == root / "raw_data"
-    assert paths.images == root / "Image_set"
-    assert paths.embeddings == root / "embeddings"
-
-
-def test_make_structure_idempotent(tmp_path: Path) -> None:
-    """Test that make_structure can be called multiple times."""
-    root = tmp_path / "test_project"
-    paths = ProjectPaths(root, "processed")
-
-    paths.make_structure()
-    # Should not crash
-    paths.make_structure()
-
-    assert paths.processed.exists()
-
 
 # =============================================================================
 # Pipeline Orchestration Tests (Testing ThingsEEGPipeline)
@@ -50,17 +22,9 @@ def mock_pipeline(tmp_path: Path) -> ThingsEEGPipeline:
         project_dir=tmp_path,
         subjects=[1],
         models=["test_model"],
-        processed_dir_name="test_processed",
+        processed_dir=Path("test_processed"),
     )
     return ThingsEEGPipeline(config)
-
-
-def test_pipeline_initializes_correct_paths(
-    mock_pipeline: ThingsEEGPipeline, tmp_path: Path
-) -> None:
-    """Test that the pipeline sets up paths correctly from config."""
-    assert mock_pipeline.paths.processed == tmp_path / "test_processed"
-    assert mock_pipeline.paths.root == tmp_path
 
 
 # =============================================================================
@@ -71,7 +35,7 @@ def test_pipeline_initializes_correct_paths(
 def test_check_raw_data_fails_missing_files(mock_pipeline: ThingsEEGPipeline) -> None:
     """Test validation of raw data existence."""
     # We haven't created any files in tmp_path, so this should fail
-    assert mock_pipeline._check_raw_data() is False
+    assert mock_pipeline.validate_pipeline_inputs() is False
 
 
 def test_check_raw_data_succeeds_with_files(
@@ -86,4 +50,4 @@ def test_check_raw_data_succeeds_with_files(
         sub_dir.mkdir(parents=True)
         (sub_dir / "raw_eeg_training.npy").touch()
 
-    assert mock_pipeline._check_raw_data() is True
+    assert mock_pipeline.validate_pipeline_inputs() is True

@@ -691,7 +691,7 @@ EMBEDDER_DICT = {
 
 def build_embedder(
     model_type: str,
-    data_path: Path | str = "data/things-eeg2/Image_set/",
+    data_path: Path = Path("data/things-eeg2/Image_set/"),
     force: bool = False,
     dry_run: bool = False,
     device: str = "cuda:0",
