@@ -10,36 +10,9 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from things_eeg2_dataset.processing.pipeline import (
     PipelineConfig,
-    ProjectPaths,
     ThingsEEGPipeline,
 )
 
-
-def test_project_paths_custom_processed_name(tmp_path: Path) -> None:
-    """Test that ProjectPaths handles custom processed directory names."""
-    project_dir = tmp_path / "test_project"
-    paths = ProjectPaths(project_dir, "custom_processed")
-
-    # Verify path construction
-    assert paths.processed == project_dir / "custom_processed"
-    assert paths.raw_data == project_dir / "raw_data"
-
-
-def test_make_structure_preserves_existing_content(tmp_path: Path) -> None:
-    """Test that creating structure doesn't wipe existing files."""
-    root = tmp_path / "test_project"
-    root.mkdir()
-
-    # Create a pre-existing file
-    (root / "important.txt").write_text("keep me")
-
-    paths = ProjectPaths(root, "processed")
-    paths.make_structure()
-
-    assert (root / "important.txt").read_text() == "keep me"
-
-
-# =============================================================================
 # Path Consistency Tests (Testing Argument Propagation)
 # =============================================================================
 
@@ -51,7 +24,7 @@ def mock_pipeline_config(tmp_path: Path) -> PipelineConfig:
         project_dir=tmp_path,
         subjects=[1],
         models=["test_model"],
-        processed_dir_name="custom_processed",  # Key test parameter
+        processed_dir=Path("custom_processed"),  # Key test parameter
         dry_run=False,
     )
 
@@ -93,10 +66,10 @@ def test_embedder_receives_correct_data_path(
 
 def test_check_raw_data_missing_dirs(tmp_path: Path) -> None:
     """Test _check_raw_data fails when directories are missing."""
-    cfg = PipelineConfig(tmp_path, [1], [], "proc")
+    cfg = PipelineConfig(tmp_path, [1], [], Path("proc"))
     pipeline = ThingsEEGPipeline(cfg)
 
-    assert pipeline._check_raw_data() is False
+    assert pipeline.validate_pipeline_inputs() is False
 
 
 @patch("things_eeg2_dataset.processing.pipeline.setup_logging")
@@ -110,7 +83,7 @@ def test_check_raw_data_missing_subjects(
     mock_setup.return_value = logging.getLogger("pipeline")
 
     cfg = PipelineConfig(
-        project_dir=tmp_path, subjects=[1, 2], models=[], processed_dir_name="proc"
+        project_dir=tmp_path, subjects=[1, 2], models=[], processed_dir=Path("proc")
     )
     pipeline = ThingsEEGPipeline(cfg)
 
@@ -123,7 +96,7 @@ def test_check_raw_data_missing_subjects(
         ses_dir.mkdir(parents=True)
         (ses_dir / training_data_file).touch()
 
-    assert pipeline._check_raw_data() is False
+    assert pipeline.validate_pipeline_inputs() is False
 
     # 2. Fix the assertion string
     # The code logs the list of integers, e.g., "[2]"

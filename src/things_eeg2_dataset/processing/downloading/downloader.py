@@ -8,6 +8,8 @@ from typing import ClassVar, TypedDict
 
 from osfclient import OSF
 
+from things_eeg2_dataset.paths import layout
+
 from .download_utils import download_from_gdrive
 
 logger = logging.getLogger(__name__)
@@ -107,11 +109,11 @@ class Downloader:
             ValueError: If subjects contains invalid IDs
         """
         self.project_dir = Path(project_dir)
-        self.raw_dir = self.project_dir / "raw_data"
-        self.source_dir = self.project_dir / "source_data"
-        self.image_dir = self.project_dir / "Image_set"
-        self.train_img_dir = self.image_dir / "training_images"
-        self.test_img_dir = self.image_dir / "test_images"
+        self.raw_dir = layout.get_raw_dir(self.project_dir)
+        self.source_dir = layout.get_source_dir(self.project_dir)
+        self.image_dir = layout.get_images_dir(self.project_dir)
+        self.train_img_dir = layout.get_training_images_dir(self.project_dir)
+        self.test_img_dir = layout.get_test_images_dir(self.project_dir)
         self.subjects = subjects if subjects is not None else list(range(1, 11))
         self.overwrite = overwrite
         self.dry_run = dry_run
@@ -276,10 +278,10 @@ class Downloader:
 
         return True
 
-    def download_subject(self, subject_id: int, url_dict: dict, base_dir: Path) -> bool:
+    def download_subject(self, subject_id: int, url_dict: dict, raw_dir: Path) -> bool:
         logger.info(f"Starting download for subject {subject_id:02d}")
         zip_exists, extracted_exists, valid_structure = self._check_if_exists(
-            subject_id, base_dir
+            subject_id, raw_dir
         )
 
         if valid_structure and not self.overwrite:
@@ -290,7 +292,7 @@ class Downloader:
 
         if self.dry_run:
             logger.info(
-                f"[DRY RUN] Would download data for subject {subject_id:02d} in {base_dir}"
+                f"[DRY RUN] Would download data for subject {subject_id:02d} in {raw_dir}"
             )
             return True
 
@@ -299,12 +301,12 @@ class Downloader:
                 f"Overwrite mode: removing existing data for subject {subject_id:02d}"
             )
             # Remove ZIP if exists
-            zip_path = base_dir / f"sub-{subject_id:02d}.zip"
+            zip_path = raw_dir / f"sub-{subject_id:02d}.zip"
             if zip_path.exists():
                 zip_path.unlink()
 
             # Remove extracted directory if exists
-            subject_path = base_dir / f"sub-{subject_id:02d}"
+            subject_path = raw_dir / f"sub-{subject_id:02d}"
             if subject_path.exists():
                 shutil.rmtree(subject_path)
 
@@ -316,7 +318,7 @@ class Downloader:
 
         if not zip_exists:
             url = url_dict[subject_id]
-            zip_path = base_dir / f"sub-{subject_id:02d}.zip"
+            zip_path = raw_dir / f"sub-{subject_id:02d}.zip"
             download_from_gdrive(url, zip_path)
         logger.info(f"Successfully processed subject {subject_id:02d}")
         return True

@@ -20,6 +20,8 @@ from typing import Any
 
 import numpy as np
 
+from things_eeg2_dataset.paths import layout
+
 from .epoching import epoch
 from .save import save_prepr
 from .whiten import mvnn_whiten
@@ -93,8 +95,8 @@ class RawProcessor:
     def __init__(
         self,
         subjects: list[int],
-        project_dir: str,
-        processed_dir_name: str = "processed",
+        project_dir: Path,
+        processed_dir: Path = Path("processed"),
         sfreq: int = 250,
         mvnn_dim: str = "epochs",
     ) -> None:
@@ -103,10 +105,10 @@ class RawProcessor:
         self.number_of_sessions = 4
         self.sampling_frequency = sfreq
         self.mvnn_dim = mvnn_dim
-        self.project_dir = Path(project_dir)
-        self.processed_dir = self.project_dir / processed_dir_name
-        self.train_img_dir = self.project_dir / "Image_set" / "training_images"
-        self.test_img_dir = self.project_dir / "Image_set" / "test_images"
+        self.project_dir = Path(project_dir).resolve()
+        self.processed_dir = layout.get_processed_dir(self.project_dir)
+        self.train_img_dir = layout.get_training_images_dir(self.project_dir)
+        self.test_img_dir = layout.get_test_images_dir(self.project_dir)
 
         # Initialize data containers
         self.epoched_test: list[np.ndarray] | None = None
@@ -192,10 +194,8 @@ class RawProcessor:
             self.img_conditions_test,
             self.ch_names,
             self.times,
-            processed_dir=self.processed_dir,
+            project_dir=self.project_dir,
         )
-
-        logger.info(f"Data saved to: {self.processed_dir}/sub-{int(sub):02d}/")
 
     def run(self, overwrite: bool = False, dry_run: bool = False) -> None:
         """
@@ -216,14 +216,14 @@ class RawProcessor:
             If True, only simulates the preprocessing without executing it (default: False).
         """
         logger.info(">>> EEG Data Preprocessing <<<")
-        logger.info(f"\nSubjects:          {self.subjects}")
+        logger.info(f"Subjects:          {self.subjects}")
         logger.info(f"Number of sessions: {self.number_of_sessions}")
         logger.info(f"Sampling frequency: {self.sampling_frequency} Hz")
         logger.info(f"MVNN dimension:     {self.mvnn_dim}")
         logger.info(f"Project directory:  {self.project_dir}")
 
         for subject in self.subjects:
-            logger.info(f"\n--- Processing subject: {subject} ---")
+            logger.info(f"--- Processing subject: {subject} ---")
             # only if processed data doesn't already exist or force is True
             if not self._check_processed_data_exists() or overwrite:
                 self.epoch_and_sort(subject)
@@ -232,7 +232,7 @@ class RawProcessor:
                     self.save_preprocessed_data(subject)
             else:
                 logger.info(
-                    f"\nProcessed data for subject {subject} already exists. Skipping..."
+                    f"Processed data for subject {subject} already exists. Skipping..."
                 )
 
         logger.info("Preprocessing completed successfully!")
