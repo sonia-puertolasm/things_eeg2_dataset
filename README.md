@@ -58,7 +58,7 @@ uv run things-eeg2 process \
     --subjects 1 2 3 4 5 6 7 8 9 10 \
 
 
-uv run things-eeg2 load \
+uv run things-eeg2 info \
     --project-dir /path/to/project_dir \
     --subject <EXAMPLE_SUBJECT \
     --session <EXAMPLE_SESSION> \
