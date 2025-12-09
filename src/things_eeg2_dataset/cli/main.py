@@ -128,8 +128,8 @@ def process(  # noqa: PLR0913
     raise typer.Exit(code=0)
 
 
-@app.command(name="load")
-def load(
+@app.command(name="info")
+def info(
     project_dir: Path = typer.Option(
         ..., "--project-dir", help="Path to project root."
     ),
