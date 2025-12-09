@@ -7,6 +7,7 @@ from rich import print  # noqa: A004
 
 from things_eeg2_dataset import __version__
 from things_eeg2_dataset.cli.logger import setup_logging
+from things_eeg2_dataset.dataloader.sample_info import get_info_for_sample
 
 setup_logging()
 
@@ -128,13 +129,34 @@ def process(  # noqa: PLR0913
 
 
 @app.command(name="load")
-def load() -> None:
+def load(
+    project_dir: Path = typer.Option(
+        ..., "--project-dir", help="Path to project root."
+    ),
+    subject: int = typer.Option(..., "--subject", help="Subject number (e.g., 1)."),
+    session: int = typer.Option(..., "--session", help="Session number (e.g., 1)."),
+    data_index: int = typer.Option(
+        ...,
+        "--data-index",
+        help="0-based index of the numpy array element you want information about.",
+    ),
+    partition: str = typer.Option(
+        "training", "--partition", help="Partition ('training' or 'test')."
+    ),
+) -> None:
     """
-    Run the THINGS-EEG2 dataloader tasks.
+    Load and display information for a specific sample based on metadata.
     """
-    typer.echo("Dataloader not yet implemented.")
+    info = get_info_for_sample(
+        project_dir=project_dir,
+        subject=subject,
+        session=session,
+        data_idx=data_index,
+        partition=partition,
+    )
+
+    print(info)
 
 
-# ---------------------------------------------------------------------
 if __name__ == "__main__":
     app()
