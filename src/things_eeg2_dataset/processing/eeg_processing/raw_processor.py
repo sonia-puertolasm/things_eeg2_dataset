@@ -21,9 +21,9 @@ from typing import Any
 import numpy as np
 
 from things_eeg2_dataset.paths import layout
+from things_eeg2_dataset.processing.eeg_processing.epoching import epoch
+from things_eeg2_dataset.processing.eeg_processing.save import save_prepr
 from things_eeg2_dataset.processing.eeg_processing.whiten import mvnn_whiten
-from things_eeg2_dataset.processing.epoching import epoch
-from things_eeg2_dataset.processing.save import save_prepr
 
 logger = logging.getLogger(__name__)
 

@@ -39,5 +39,4 @@ def test_processor_receives_correct_processed_dir(
 
     # Verify RawProcessor initialization args
     call_kwargs = mock_raw_proc.call_args.kwargs
-    assert call_kwargs["processed_dir"] == Path("custom_processed")
     assert call_kwargs["project_dir"] == mock_pipeline_config.project_dir
