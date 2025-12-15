@@ -48,10 +48,44 @@ class PipelineConfig:
     skip_download: bool = False
     skip_processing: bool = False
     create_embeddings: bool = False
-    skip_merging: bool = False
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "project_dir", self.project_dir.resolve())
+
+
+def _init_pipeline(  # noqa: PLR0913
+    project_dir: Path,
+    subjects: list[int],
+    force: bool,
+    dry_run: bool,
+    skip_download: bool,
+    skip_preprocessing: bool,
+    create_embeddings: bool,
+    device: str = "cuda:0",
+    sfreq: int = 250,
+    models: list[str] | None = None,
+) -> "ThingsEEGPipeline":  # type: ignore
+    from things_eeg2_dataset.processing.pipeline import (  # noqa: PLC0415
+        PipelineConfig,
+        ThingsEEGPipeline,
+    )
+
+    models = models or []
+
+    config = PipelineConfig(
+        project_dir=project_dir,
+        subjects=subjects,
+        models=models,
+        sfreq=sfreq,
+        device=device,
+        overwrite=force,
+        dry_run=dry_run,
+        skip_download=skip_download,
+        skip_processing=skip_preprocessing,
+        create_embeddings=create_embeddings,
+    )
+
+    return ThingsEEGPipeline(config)
 
 
 def get_git_commit_hash() -> str:
