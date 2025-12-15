@@ -32,3 +32,4 @@ embeddings/
 *.typed
 
 data_explore.ipynb
+*.html

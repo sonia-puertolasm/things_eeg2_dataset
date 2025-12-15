@@ -22,7 +22,6 @@ def mock_pipeline(tmp_path: Path) -> ThingsEEGPipeline:
         project_dir=tmp_path,
         subjects=[1],
         models=["test_model"],
-        processed_dir=Path("test_processed"),
     )
     return ThingsEEGPipeline(config)
 

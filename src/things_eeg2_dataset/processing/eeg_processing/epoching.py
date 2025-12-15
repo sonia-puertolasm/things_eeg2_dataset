@@ -1,3 +1,5 @@
+import logging
+import threading
 from pathlib import Path
 
 import mne
@@ -9,15 +11,50 @@ NUM_SESSIONS = 4  # Number of EEG data collection sessions
 
 mne.set_log_level("WARNING")
 
+logger = logging.getLogger(__name__)
 
-def epoch(  # noqa: PLR0913
+
+class PrefetchLoader:
+    def __init__(self, paths: list[Path]) -> None:
+        self.paths = paths
+        self.results: list[dict | None] = [None] * len(paths)
+        self.errors: list[Exception | None] = [None] * len(paths)
+        self.threads: list[threading.Thread | None] = [None] * len(paths)
+
+    def start(self, index: int) -> None:
+        def load_fn(i: int, path: Path) -> None:
+            try:
+                self.results[i] = np.load(path, allow_pickle=True).item()
+            except Exception as e:
+                self.errors[i] = e
+
+        t = threading.Thread(target=load_fn, args=(index, self.paths[index]))
+        t.start()
+        self.threads[index] = t
+
+    def get(self, index: int) -> dict:
+        t = self.threads[index]
+        if not t:
+            raise RuntimeError(f"Data for {self.paths[index]} was not started loading.")
+        t.join()
+        if self.errors[index] is not None:
+            raise RuntimeError(f"Failed to load {self.paths[index]}") from self.errors[
+                index
+            ]
+
+        result = self.results[index]
+
+        if result is None:
+            raise RuntimeError(f"No data loaded for {self.paths[index]}.")
+        return result
+
+
+def epoch(
     subject: int,
     project_dir: Path,
     sampling_frequency: int,
     data_part: str,
     use_decim: bool = True,
-    # TODO: Remove testing option  # noqa: FIX002
-    testing: bool = False,
 ) -> tuple[np.ndarray, np.ndarray, list, np.ndarray]:
     """This function first converts the EEG data to MNE raw format, and
     performs channel selection, epoching, baseline correction and frequency
@@ -28,29 +65,47 @@ def epoch(  # noqa: PLR0913
     epoched_data = []
     img_conditions = []
 
-    for s in range(NUM_SESSIONS):
-        eeg_dir = (
-            Path("raw_data")
-            / f"sub-{format(subject, '02')}"
-            / f"ses-{format(s + 1, '02')}"
-            / f"raw_eeg_{data_part}.npy"
-        )
-        eeg_data = np.load(Path(project_dir) / eeg_dir, allow_pickle=True).item()
+    # Build full paths for all sessions
+    paths = [
+        Path(project_dir)
+        / "raw_data"
+        / f"sub-{subject:02d}"
+        / f"ses-{s + 1:02d}"
+        / f"raw_eeg_{data_part}.npy"
+        for s in range(NUM_SESSIONS)
+    ]
+    prefetch = PrefetchLoader(paths)
 
-        if not testing:
-            ch_names = eeg_data["ch_names"]
-            sfreq = eeg_data["sfreq"]
-            ch_types = eeg_data["ch_types"]
-            eeg_data = eeg_data["raw_eeg_data"]
-        else:
-            # Choose last two channels (to include stim channel)
-            ch_names = eeg_data["ch_names"][-2:]
-            sfreq = eeg_data["sfreq"]
-            ch_types = eeg_data["ch_types"][-2:]
-            eeg_data = eeg_data["raw_eeg_data"][-2:, :]
+    # Start loading session 0
+    prefetch.start(0)
+
+    for s in range(NUM_SESSIONS):
+        logger.info(f"  Processing session {s + 1}/{NUM_SESSIONS}...")
+
+        # Wait for this session's data to finish loading
+        eeg_data = prefetch.get(s)
+
+        # Start loading next session in background
+        if s + 1 < NUM_SESSIONS:
+            prefetch.start(s + 1)
+
+        # with open(Path(project_dir) / paths[s], "rb") as f:
+        #     header = f.read()  # numpy header includes PICKLE prefix
+        #     proto = header[header.find(b'\x80') + 1]  # pickle stream starts with 0x80 <proto>
+        #     print("Protocol:", proto)       ch_names = eeg_data["ch_names"]
+
+        ch_names = eeg_data["ch_names"]
+        sfreq = eeg_data["sfreq"]
+        ch_types = eeg_data["ch_types"]
+        eeg_data = eeg_data["raw_eeg_data"]
 
         info = mne.create_info(ch_names, sfreq, ch_types)
+
+        # Note: eeg_data is huge. MNE copies it by default.
+        # If you run out of RAM, consider verbose=False or copy=False (if safe)
         raw = mne.io.RawArray(eeg_data, info)
+
+        # Explicitly delete the huge numpy array to free RAM for the next load
         del eeg_data
 
         decim_factor = 1
@@ -63,7 +118,10 @@ def epoch(  # noqa: PLR0913
 
             # We filter at Nyquist / 1.5 (re_sfreq / 3.0) to be safe
             raw.filter(
-                l_freq=None, h_freq=sampling_frequency / 3.0, n_jobs=-1, verbose=False
+                l_freq=None,
+                h_freq=sampling_frequency / 3.0,
+                n_jobs=-1,
+                verbose=False,
             )
 
         elif sampling_frequency < ORIGINAL_SAMPLING_FREQUENCY:
@@ -72,8 +130,8 @@ def epoch(  # noqa: PLR0913
             raw, events = raw.resample(
                 sampling_frequency, events=events, n_jobs=-1, stim_picks=stim_index
             )
-        if not testing:
-            raw.pick(chan_order)
+
+        raw.pick(chan_order)
 
         # Reject the target trials (event 99999)
         target_trial_id = 99999
@@ -122,10 +180,12 @@ def epoch(  # noqa: PLR0913
 
         # remove pre-stimulus period (200ms)
         pre_stim_samples = int(0.2 * sampling_frequency)
-        sorted_data = sorted_data[:, :, :, pre_stim_samples:]
+        sorted_data = sorted_data[:, :, :, pre_stim_samples:].astype(np.float32)
 
         epoched_data.append(sorted_data)
         img_conditions.append(img_cond)
         del sorted_data
+
+    print(f"Epoched data shape: {[d.shape for d in epoched_data]}")
 
     return epoched_data, img_conditions, ch_names, times

@@ -37,8 +37,9 @@ This package provides tools for downloading, preprocessing raw THINGS-EEG2 EEG d
 > [!WARNING]
 > This repository builds upon the original data processing by [Gifford et al (2022)](https://github.com/gifale95/eeg_encoding).
 > Please check out their original code and the [corresponding paper](https://www.sciencedirect.com/science/article/pii/S1053811922008758?via%3Dihub).
-> We are in no way associated with the authors, but have conducted research using the data and code they provide.
-> To make working with the dataset even easier, we wrote these utilities and hope that they will make things easier (pun intended) for other people as well.
+>
+> We are in no way associated with the authors.
+> Nonetheless we hope, that this makes things easier (pun intended) to use.
 
 ## Installation
 

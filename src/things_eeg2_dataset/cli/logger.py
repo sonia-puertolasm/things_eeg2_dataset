@@ -11,10 +11,11 @@ class CustomFormatter(logging.Formatter):
     3. Custom format with line number attached to the logger name.
     """
 
-    default_fmt = "%(asctime)s - %(levelname)s - %(message)s (%(filename)s:%(lineno)d)"
+    default_fmt = "%(asctime)s - %(levelname)s %(filename)s:%(lineno)d - %(message)s"
     bare_fmt = "%(message)s"
 
     grey = "\x1b[38;20m"
+    white = "\x1b[37;20m"
     yellow = "\x1b[33;20m"
     red = "\x1b[31;20m"
     bold_red = "\x1b[31;1m"
@@ -22,7 +23,7 @@ class CustomFormatter(logging.Formatter):
 
     FORMATS: ClassVar[dict[int, str]] = {
         logging.DEBUG: grey + default_fmt + reset,
-        logging.INFO: grey + default_fmt + reset,
+        logging.INFO: white + default_fmt + reset,
         logging.WARNING: yellow + default_fmt + reset,
         logging.ERROR: red + default_fmt + reset,
         logging.CRITICAL: bold_red + default_fmt + reset,
@@ -47,14 +48,36 @@ class CustomFormatter(logging.Formatter):
         return formatter.format(record)
 
 
-def setup_logging(level: int = logging.INFO) -> None:
+def setup_logging(verbosity: int = 0) -> None:
+    """
+    Configures logging based on verbosity count (0, 1, 2).
+
+    0: INFO (App), WARNING (Libs)
+    1: DEBUG (App), WARNING (Libs)  <- -v
+    2: DEBUG (App), DEBUG (Libs)    <- -vv
+    """
     root_logger = logging.getLogger()
-    root_logger.setLevel(level)
+
+    if verbosity == 0:
+        app_level = logging.INFO
+        lib_level = logging.WARNING
+    elif verbosity == 1:
+        app_level = logging.DEBUG
+        lib_level = logging.WARNING
+    else:
+        # -vv or more: Let everything speak
+        app_level = logging.DEBUG
+        lib_level = logging.DEBUG
+
+    root_logger.setLevel(lib_level)
+
+    app_logger = logging.getLogger("things_eeg2_dataset")
+    app_logger.setLevel(app_level)
 
     if root_logger.hasHandlers():
         root_logger.handlers.clear()
 
     ch = logging.StreamHandler(sys.stdout)
-    ch.setLevel(level)
+    ch.setLevel(min(app_level, lib_level))
     ch.setFormatter(CustomFormatter())
     root_logger.addHandler(ch)

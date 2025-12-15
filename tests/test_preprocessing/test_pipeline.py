@@ -23,7 +23,6 @@ def mock_pipeline_config(tmp_path: Path) -> PipelineConfig:
         project_dir=tmp_path,
         subjects=[1],
         models=["test_model"],
-        processed_dir=Path("custom_processed"),  # Key test parameter
         dry_run=False,
     )
 

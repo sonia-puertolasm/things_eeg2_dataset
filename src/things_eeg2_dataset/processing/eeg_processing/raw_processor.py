@@ -96,7 +96,6 @@ class RawProcessor:
         self,
         subjects: list[int],
         project_dir: Path,
-        processed_dir: Path = Path("processed"),
         sfreq: int = 250,
         mvnn_dim: str = "epochs",
     ) -> None:
@@ -136,9 +135,9 @@ class RawProcessor:
         return processed_path.exists() and len(list(processed_path.iterdir())) > 0
 
     def epoch_and_sort(self, sub: int) -> None:
-        logger.info("\n=== Epoching and sorting data ===")
+        logger.info("=== Epoching and sorting data ===", extra={"bare": True})
 
-        # Process test partition
+        logger.info("Epoching test data...", extra={"bare": True})
         (
             self.epoched_test,
             self.img_conditions_test,
@@ -146,7 +145,7 @@ class RawProcessor:
             self.times,
         ) = epoch(sub, self.project_dir, self.sampling_frequency, "test")
 
-        # Process training partition
+        logger.info("Epoching training data...", extra={"bare": True})
         (
             self.epoched_train,
             self.img_conditions_train,
@@ -161,7 +160,9 @@ class RawProcessor:
                 "Epoched data not found. Please run epoch_and_sort() first."
             )
 
-        logger.info("\n=== Applying Multivariate Noise Normalization ===")
+        logger.info(
+            "=== Applying Multivariate Noise Normalization ===", extra={"bare": True}
+        )
 
         self.whitened_test, self.whitened_train = mvnn_whiten(
             4, self.mvnn_dim, self.epoched_test, self.epoched_train
@@ -215,7 +216,6 @@ class RawProcessor:
         dry_run : bool, optional
             If True, only simulates the preprocessing without executing it (default: False).
         """
-        logger.info(">>> EEG Data Preprocessing <<<")
         logger.info(f"Subjects:          {self.subjects}")
         logger.info(f"Number of sessions: {self.number_of_sessions}")
         logger.info(f"Sampling frequency: {self.sampling_frequency} Hz")

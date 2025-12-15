@@ -6,7 +6,7 @@ Orchestrates EEG preprocessing, embedding generation, and index merging.
 import logging
 import shutil
 import subprocess
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 from things_eeg2_dataset.paths import layout
@@ -33,10 +33,14 @@ class PipelineError(Exception):
 class PipelineConfig:
     """Immutable configuration for the pipeline execution."""
 
+    # Steps of pipeline:
+    # 1. Download zip files containing raw data in raw_data format
+    # 2. Unpack zip files and optionally remove the zip files
+    # 3. Process raw EEG data into preprocessed format and save to processed directory (containing subfolders for each subject in the format "sub-XX")
+
     project_dir: Path
     subjects: list[int]
-    models: list[str]
-    processed_dir: Path = Path("processed")
+    models: list[str] = field(default_factory=list)
     sfreq: int = 250
     device: str = "cuda:0"
     overwrite: bool = False
@@ -45,7 +49,6 @@ class PipelineConfig:
     skip_processing: bool = False
     create_embeddings: bool = False
     skip_merging: bool = False
-    verbose: bool = False
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "project_dir", self.project_dir.resolve())
@@ -80,7 +83,7 @@ class ThingsEEGPipeline:
         if not self.cfg.skip_download:
             self.step_download_data()
         else:
-            self._log_header("STEP 0: Raw Data Download", skipped=True)
+            self._log_header("Raw Data Download", skipped=True)
 
         # Pre-flight check
         if not self.validate_pipeline_inputs():
@@ -91,13 +94,13 @@ class ThingsEEGPipeline:
         if not self.cfg.skip_processing:
             self.step_process_eeg()
         else:
-            self._log_header("STEP 1: EEG Preprocessing", skipped=True)
+            self._log_header("EEG Preprocessing", skipped=True)
 
         # 3. Embeddings
         if self.cfg.create_embeddings:
             self.step_generate_embeddings()
         else:
-            self._log_header("STEP 2: Embedding Generation", skipped=True)
+            self._log_header("Embedding Generation", skipped=True)
 
         # 4. Validation & Versioning
         self.validate_pipeline_outputs()
@@ -131,7 +134,7 @@ class ThingsEEGPipeline:
         logger.info(text, extra={"bare": True})
 
     def step_download_data(self) -> None:
-        self._log_header("STEP 0: Raw Data Download")
+        self._log_header("Raw Data Download")
         downloader = Downloader(
             project_dir=self.cfg.project_dir,
             subjects=self.cfg.subjects,
@@ -152,18 +155,17 @@ class ThingsEEGPipeline:
         logger.info(f"Images downloaded: {img_res}")
 
     def step_process_eeg(self) -> None:
-        self._log_header("STEP 1: EEG Preprocessing")
+        self._log_header("EEG Preprocessing")
         processor = RawProcessor(
             subjects=self.cfg.subjects,
             project_dir=self.cfg.project_dir,
-            processed_dir=self.cfg.processed_dir,
             sfreq=self.cfg.sfreq,
             mvnn_dim="epochs",
         )
         processor.run(overwrite=self.cfg.overwrite, dry_run=self.cfg.dry_run)
 
     def step_generate_embeddings(self) -> None:
-        self._log_header("STEP 2: Embedding Generation")
+        self._log_header("Embedding Generation")
 
         for model_name in self.cfg.models:
             logger.info(f"Generating: {model_name}")
@@ -182,7 +184,7 @@ class ThingsEEGPipeline:
                     raise
 
     def validate_pipeline_outputs(self) -> None:
-        self._log_header("STEP 4: Final Validation")
+        self._log_header("Final Validation")
 
         # 1. Check EEG files
         for sub in self.cfg.subjects:
