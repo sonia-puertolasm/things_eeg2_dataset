@@ -11,7 +11,7 @@ import pandas as pd
 import torch
 import torchvision.transforms as T
 from PIL import Image
-from safetensors.torch import loadfile
+from safetensors.torch import load_file
 from torch import Tensor
 from torch.utils.data import Dataset
 
@@ -435,7 +435,7 @@ class ThingsEEGDataset(Dataset):
         if not Path(feat_file).exists():
             raise FileNotFoundError(f"Embedding feature file not found: {feat_file}")
 
-        saved = loadfile(feat_file)
+        saved = load_file(feat_file)
         img_embeddings = saved["img_features"]
         text_embeddings = saved.get("text_features", None)
 
@@ -446,7 +446,7 @@ class ThingsEEGDataset(Dataset):
 
         self.emb_stats = None
         if normalize_embed and stats_file and Path(stats_file).exists():
-            self.emb_stats = loadfile(stats_file)
+            self.emb_stats = load_file(stats_file)
 
         # Share memory so multiple workers don't duplicate
         self._shared_objects = {

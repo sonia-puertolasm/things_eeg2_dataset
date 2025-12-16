@@ -4,7 +4,7 @@ import torch
 from diffusers.pipelines.controlnet import MultiControlNetModel
 from PIL import Image
 from safetensors import safe_open
-from safetensors.torch import loadfile
+from safetensors.torch import load_file
 from transformers import CLIPImageProcessor, CLIPVisionModelWithProjection
 
 from .utils import get_generator, is_torch2_available
@@ -169,7 +169,7 @@ class IPAdapter:
                             f.get_tensor(key)
                         )
         else:
-            state_dict = loadfile(self.ip_ckpt, device="cpu")
+            state_dict = load_file(self.ip_ckpt, device="cpu")
         self.image_proj_model.load_state_dict(state_dict["image_proj"])
         ip_layers = torch.nn.ModuleList(self.pipe.unet.attn_processors.values())
         ip_layers.load_state_dict(state_dict["ip_adapter"])
