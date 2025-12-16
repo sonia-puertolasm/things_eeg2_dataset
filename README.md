@@ -1,7 +1,7 @@
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./.github/assets/things_eeg2_dataset-banner-dark.png">
-  <source media="(prefers-color-scheme: light)" srcset="./.github/assets/things_eeg2_dataset-banner-light.png">
-  <img alt="things_eeg2_dataset" src="./.github/assets/things_eeg2_dataset-banner-light.png">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ZEISS/things-eeg2-dataset/main/.github/assets/things_eeg2_dataset-banner-dark.png">
+  <source media="(prefers-color-scheme: light)" srcset="https://github.com/ZEISS/things_eeg2_dataset/blob/main/.github/assets/things_eeg2_dataset-banner-light.png?raw=true">
+  <img alt="things_eeg2_dataset" src="https://github.com/ZEISS/things_eeg2_dataset/blob/main/.github/assets/things_eeg2_dataset-banner-light.png?raw=true">
 </picture>
 
 <div align="center">
