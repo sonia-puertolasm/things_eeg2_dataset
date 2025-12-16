@@ -9,7 +9,7 @@ import subprocess
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from things_eeg2_dataset.cli.main import EmbeddingModel
+from things_eeg2_dataset.cli.main import EmbeddingModel, Partition
 from things_eeg2_dataset.paths import layout
 from things_eeg2_dataset.processing import (
     Downloader,
@@ -235,10 +235,19 @@ class ThingsEEGPipeline:
 
         # 2. Check Embeddings
         for model in self.cfg.models:
-            if not layout.get_embedding_file(self.cfg.project_dir, model).exists():
-                logger.warning(f"Missing embeddings for {model}")
-                if not self.cfg.dry_run:
-                    raise PipelineError(f"Missing embeddings for {model}")
+            for partition in [Partition.TRAINING, Partition.TEST]:
+                for full in [True, False]:
+                    emb_file = layout.get_embedding_file(
+                        self.cfg.project_dir, model, partition, full
+                    )
+                    if not emb_file.exists():
+                        logger.warning(
+                            f"Missing embeddings for {model} ({partition.value}, full={full})"
+                        )
+                        if not self.cfg.dry_run:
+                            raise PipelineError(
+                                f"Missing embeddings for {model} ({partition.value}, full={full})"
+                            )
 
     def validate_pipeline_inputs(self) -> bool:
         if not layout.get_raw_dir(self.cfg.project_dir).exists():

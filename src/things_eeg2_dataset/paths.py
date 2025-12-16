@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from pathlib import Path
 
+from things_eeg2_dataset.cli.main import Partition
+
 
 @dataclass(frozen=True)
 class DataDirectoryLayout:
@@ -38,7 +40,7 @@ class DataDirectoryLayout:
     # Shape: (sessions, conditions) -> (4, 200)
     test_image_conditions_template: str = "img_conditions_test_sub-{subject:02d}.npy"
 
-    embedding_template: str = "{model}_embeddings.pt"
+    embedding_template: str = "{model}_features_{partition}{full_suffix}.safetensors"
     version_file: str = "DATA_VERSION.txt"
 
     def get_raw_dir(self, root: Path) -> Path:
@@ -105,9 +107,14 @@ class DataDirectoryLayout:
             / f"meta_sub-{subject:02d}.json"
         )
 
-    def get_embedding_file(self, root: Path, model_name: str) -> Path:
+    def get_embedding_file(
+        self, root: Path, model_name: str, partition: Partition, full: bool
+    ) -> Path:
+        full_suffix = "_full" if full else ""
         return self.get_embeddings_dir(root) / self.embedding_template.format(
-            model=model_name
+            model=model_name,
+            partition=partition.value,
+            full_suffix=full_suffix,
         )
 
     def get_version_file(self, root: Path) -> Path:

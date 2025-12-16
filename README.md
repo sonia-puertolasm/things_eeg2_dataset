@@ -97,8 +97,8 @@ Each embedder generates:
 **Output Files:**
 ```
 embeddings/
-├── ViT-H-14_features_train.pt           # Pooled embeddings
-├── ViT-H-14_features_train_full.pt      # Full token sequences
+├── ViT-H-14_features_training.pt           # Pooled embeddings
+├── ViT-H-14_features_training_full.pt      # Full token sequences
 ├── ViT-H-14_features_test.pt
 └── ViT-H-14_features_test_full.pt
 ```
