@@ -14,6 +14,7 @@ dependencies = [
     "osfclient>=0.0.5",
     "pandas>=2.3.3",
     "plotly>=6.5.0",
+    "pyinstrument>=5.1.1",
     "safetensors>=0.6.2",
     "scikit-learn>=1.7.2",
     "streamlit>=1.52.1",
@@ -26,7 +27,6 @@ dependencies = [
 dev = [
     { include-group = "lint" },
     { include-group = "test" },
-    "pyinstrument>=5.1.1",
     "snakeviz>=2.2.2",
 ]
 

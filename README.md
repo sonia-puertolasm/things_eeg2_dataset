@@ -8,18 +8,18 @@
 
 [![License][license-badge]](LICENSE)
 [![CI Status][ci-badge]][ci]
-<!-- [![Binary Build][binary-build-badge]][binary-build]
+[![PyPI Publish][pypi-publish-badge]][pypi-publish]
 [![Conda Platform][conda-badge]][conda-url]
-[![Conda Downloads][conda-downloads-badge]][conda-url]
-[![Codecov][codecov]][codecov-url] -->
+<!-- [![Conda Downloads][conda-downloads-badge]][conda-url] -->
+<!-- [![Codecov][codecov]][codecov-url] --> -->
 
 [license-badge]: https://img.shields.io/github/license/zeiss/things_eeg2_dataset?style=flat-square
 
 [ci-badge]: https://img.shields.io/github/actions/workflow/status/zeiss/things_eeg2_dataset/ci.yml?branch=main&style=flat-square&label=CI
 [ci]: https://github.com/zeiss/things_eeg2_dataset/actions/workflows/ci.yml
 
-<!-- [binary-build-badge]: https://img.shields.io/github/actions/workflow/status/zeiss/things_eeg2_dataset/build.yml?branch=main&style=flat-square&label=Binary%20Build
-[binary-build]: https://github.com/zeiss/things_eeg2_dataset/actions/workflows/build.yml -->
+[package-publishing-badge]: https://img.shields.io/github/actions/workflow/status/zeiss/things_eeg2_dataset/publish.yml?branch=main&style=flat-square&label=PyPI%20Publish
+[pypi-publish]: https://github.com/zeiss/things_eeg2_dataset/actions/workflows/publish.yml
 
 <!-- [conda-badge]: https://img.shields.io/conda/vn/conda-forge/things_eeg2_dataset?style=flat-square
 [conda-downloads-badge]: https://img.shields.io/conda/dn/conda-forge/things_eeg2_dataset?style=flat-square
