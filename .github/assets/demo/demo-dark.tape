@@ -1,7 +1,7 @@
 Output .github/assets/demo/demo-dark.mp4
 Output .github/assets/demo/demo-dark.gif
 
-Set Theme {"name":"Whimsy","black":"#535178","red":"#ef6487","green":"#5eca89","yellow":"#fdd877","blue":"#65aef7","magenta":"#aa7ff0","cyan":"#43c1be","white":"#ffffff","brightBlack":"#535178","brightRed":"#ef6487","brightGreen":"#5eca89","brightYellow":"#fdd877","brightBlue":"#65aef7","brightMagenta":"#aa7ff0","brightCyan":"#43c1be","brightWhite":"#ffffff","background":"#0d1117","foreground":"#b3b0d6","selection":"#3d3c58","cursor":"#b3b0d6"}
+Set Theme {"name":"Whimsy","black":"#535178","red":"#ef6487","green":"#5eca89","yellow":"#fdd877","blue":"#65aef7","magenta":"#aa7ff0","cyan":"#43c1be","white":"#ffffff","brightBlack":"#535178","brightRed":"#ef6487","brightGreen":"#5eca89","brightYellow":"#fdd877","brightBlue":"#65aef7","brightMagenta":"#aa7ff0","brightCyan":"#43c1be","brightWhite":"#ffffff","background":"#151b23","foreground":"#b3b0d6","selection":"#3d3c58","cursor":"#b3b0d6"}
 
 Set Shell "bash"
 Set FontSize 28
