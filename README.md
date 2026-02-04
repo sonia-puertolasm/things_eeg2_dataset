@@ -25,6 +25,25 @@
 
 </div>
 
+# THINGS-EEG2 CLI application (Optimized)
+
+This repository is an optimized version of the CLI application introduced by Paul K. Mueller for downloading, processing and working with the THINGS-EEG2 dataset.
+
+# Provenance
+
+This project is based on the original implementation by ZEISS:
+https://github.com/ZEISS/things_eeg2_dataset
+
+The codebase was forked from the ZEISS repository and extended with additional optimizations and modifications for research and experimental use.
+
+# Optimizations and Modifications
+
+Compared to the original implementation, the current version includes:
+- Dependencies compatibility fix
+- Improved THINGS-EEG2 downloading logic
+
+These changes are intended to improve usability, robustness and performance in large-scale experimental workflows.
+
 # Introduction
 
 This package provides tools for downloading, preprocessing the raw THINGS-EEG2 data, and generating image embeddings using various vision models.
